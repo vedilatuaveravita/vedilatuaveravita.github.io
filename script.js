@@ -1,5 +1,5 @@
 // URL del backend su Vercel — aggiorna questa riga con l'URL reale dopo il deploy (vedi DEPLOY.md nel repo nuova-api)
-const BACKEND_URL = 'https://nuova-api.vercel.app';
+const BACKEND_URL = 'https://nuova-api.vercel.app'; // URL reale confermato, deploy attivo
 
 const modal = document.getElementById('creator');
 function openCreator(){ modal.classList.add('open'); modal.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden'; }
