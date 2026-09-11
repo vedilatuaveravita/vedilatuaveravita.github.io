@@ -2,7 +2,15 @@
 const BACKEND_URL = 'https://nuova-api.vercel.app'; // URL reale confermato, deploy attivo
 
 const modal = document.getElementById('creator');
-function openCreator(){ modal.classList.add('open'); modal.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden'; }
+function openCreator(){
+  modal.classList.add('open'); modal.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden';
+  document.getElementById('filmForm').classList.remove('done');
+  document.querySelector('.modal-head').classList.remove('done');
+  const success = document.getElementById('success');
+  success.classList.remove('show');
+  const video = success.querySelector('video');
+  if (video) video.remove();
+}
 function closeCreator(){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); document.body.style.overflow=''; }
 modal.addEventListener('click', e => { if(e.target === modal) closeCreator(); });
 document.addEventListener('keydown', e => { if(e.key === 'Escape') closeCreator(); });
@@ -57,6 +65,8 @@ async function pollStatus(id){
 document.getElementById('filmForm').addEventListener('submit', async e => {
   e.preventDefault();
   const form = document.getElementById('filmForm');
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
   const prompt = document.getElementById('prompt').value;
   const file = photos.files[0];
   if (!file) { alert('Carica almeno una foto.'); return; }
@@ -71,10 +81,13 @@ document.getElementById('filmForm').addEventListener('submit', async e => {
     const res = await fetch(`${BACKEND_URL}/api/generate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ imageBase64, prompt }),
+      body: JSON.stringify({ email, password, imageBase64, prompt }),
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Errore');
+    if (!res.ok) {
+      setSuccessMessage('Non siamo partiti', data.error || 'Riprova tra poco.');
+      return;
+    }
     pollStatus(data.id);
   } catch (err) {
     setSuccessMessage('Non siamo partiti', 'Non siamo riusciti ad avviare la generazione. Riprova tra poco.');
