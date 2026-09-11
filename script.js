@@ -1,6 +1,13 @@
 // URL del backend su Vercel.
 const BACKEND_URL = 'https://nuova-api.vercel.app';
 
+let currentEmail = '';
+let currentPassword = '';
+
+const accountStatus = document.getElementById('account-status');
+const accountStep = document.getElementById('account-step');
+const filmStep = document.getElementById('film-step');
+
 const photos = document.getElementById('photos');
 const dropzone = document.getElementById('dropzone');
 const result = document.getElementById('result');
@@ -26,6 +33,41 @@ function showResult(text) {
   resultText.textContent = text;
 }
 
+// PASSO 1: registrazione o accesso.
+document.getElementById('accountForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+
+  accountStatus.textContent = 'Un attimo, verifichiamo il tuo account…';
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/account`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+    const data = await res.json();
+    if (!res.ok) { accountStatus.textContent = data.error || 'Riprova tra poco.'; return; }
+
+    currentEmail = email;
+    currentPassword = password;
+
+    if (data.freeVideoUsed) {
+      accountStatus.textContent = 'Hai già usato il tuo film gratuito con questo account. I piani a pagamento arrivano presto.';
+      return;
+    }
+
+    accountStatus.textContent = data.isNew ? 'Account creato ✓' : 'Bentornato ✓';
+    accountStep.classList.add('done');
+    filmStep.hidden = false;
+    filmStep.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch (err) {
+    accountStatus.textContent = 'Non siamo riusciti a verificare il tuo account. Riprova tra poco.';
+  }
+});
+
+// PASSO 2: generazione del film (richiede account già confermato al passo 1).
 async function pollStatus(id) {
   let data;
   try {
@@ -55,48 +97,23 @@ async function pollStatus(id) {
 
 document.getElementById('filmForm').addEventListener('submit', async e => {
   e.preventDefault();
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
   const prompt = document.getElementById('prompt').value;
   const file = photos.files[0];
   if (!file) { alert('Carica una foto.'); return; }
 
   const existingVideo = result.querySelector('video');
   if (existingVideo) existingVideo.remove();
-
-  // Primo passo: confermiamo l'account prima di spendere una generazione.
-  showResult('Un attimo, verifichiamo il tuo account…');
-  let account;
-  try {
-    const accountRes = await fetch(`${BACKEND_URL}/api/account`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
-    account = await accountRes.json();
-    if (!accountRes.ok) { showResult(account.error || 'Riprova tra poco.'); return; }
-  } catch (err) {
-    showResult('Non siamo riusciti a verificare il tuo account. Riprova tra poco.');
-    return;
-  }
-
-  if (account.freeVideoUsed) {
-    showResult('Hai già usato il tuo film gratuito con questo account. I piani a pagamento arrivano presto.');
-    return;
-  }
-
-  showResult(account.isNew ? 'Account creato ✓ Iniziamo.' : 'Bentornato ✓ Iniziamo.');
+  showResult('Un attimo, stiamo componendo la tua prima visione…');
 
   try {
     const imageBase64 = await fileToBase64(file);
     const res = await fetch(`${BACKEND_URL}/api/generate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password, imageBase64, prompt }),
+      body: JSON.stringify({ email: currentEmail, password: currentPassword, imageBase64, prompt }),
     });
     const data = await res.json();
     if (!res.ok) { showResult(data.error || 'Riprova tra poco.'); return; }
-    showResult('Un attimo, stiamo componendo la tua prima visione…');
     pollStatus(data.id);
   } catch (err) {
     showResult('Non siamo riusciti ad avviare la generazione. Riprova tra poco.');
