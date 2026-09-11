@@ -63,7 +63,29 @@ document.getElementById('filmForm').addEventListener('submit', async e => {
 
   const existingVideo = result.querySelector('video');
   if (existingVideo) existingVideo.remove();
-  showResult('Un attimo, stiamo componendo la tua prima visione…');
+
+  // Primo passo: confermiamo l'account prima di spendere una generazione.
+  showResult('Un attimo, verifichiamo il tuo account…');
+  let account;
+  try {
+    const accountRes = await fetch(`${BACKEND_URL}/api/account`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+    account = await accountRes.json();
+    if (!accountRes.ok) { showResult(account.error || 'Riprova tra poco.'); return; }
+  } catch (err) {
+    showResult('Non siamo riusciti a verificare il tuo account. Riprova tra poco.');
+    return;
+  }
+
+  if (account.freeVideoUsed) {
+    showResult('Hai già usato il tuo film gratuito con questo account. I piani a pagamento arrivano presto.');
+    return;
+  }
+
+  showResult(account.isNew ? 'Account creato ✓ Iniziamo.' : 'Bentornato ✓ Iniziamo.');
 
   try {
     const imageBase64 = await fileToBase64(file);
@@ -74,6 +96,7 @@ document.getElementById('filmForm').addEventListener('submit', async e => {
     });
     const data = await res.json();
     if (!res.ok) { showResult(data.error || 'Riprova tra poco.'); return; }
+    showResult('Un attimo, stiamo componendo la tua prima visione…');
     pollStatus(data.id);
   } catch (err) {
     showResult('Non siamo riusciti ad avviare la generazione. Riprova tra poco.');
