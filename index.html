@@ -11,29 +11,40 @@
   </head>
   <body>
     <div class="grain"></div>
-    <header class="nav"><a class="logo" href="#top">NUOVA<span>®</span></a><nav><a href="#come-funziona">Come funziona</a><a href="#prezzi">Prezzi</a><a href="#studio">Studio</a></nav><button class="nav-cta" onclick="openCreator()">Crea il tuo film <i>↗</i></button></header>
+    <header class="nav"><a class="logo" href="#top">NUOVA<span>®</span></a></header>
 
-    <main id="top">
-      <section class="hero">
-        <div class="hero-copy"><div class="eyebrow"><span></span> AI portrait film studio</div><h1>Vediti<br/><em>come non ti hai</em><br/>mai visto.</h1><p>Le tue foto. La tua storia. Un film breve in cui sei tu il protagonista di una realtà possibile.</p><div class="hero-actions"><button class="button primary" onclick="openCreator()">Crea il primo film <span>→</span></button><span class="free-note">Il primo è gratuito<br/><b>nessuna carta richiesta</b></span></div></div>
-        <div class="hero-art"><img class="hero-image" src="hero-cosmic.png" alt="Silhouette che si dissolve in un cielo cosmico stellato" /><div class="stamp">MADE<br/>FROM<br/>YOU</div><div class="film-label">01—YOUR<br/>NEW STORY</div><button class="play-orb" aria-label="Guarda il reel"><span>▶</span></button></div>
-      </section>
+    <main class="dashboard" id="top">
+      <div class="dash-visual"><img src="hero-cosmic.png" alt="Silhouette che si dissolve in un cielo cosmico stellato" /></div>
 
-      <section class="marquee"><div><span>UNA STORIA TUTTA TUA</span><b>✦</b><span>NON È UN FILTRO</span><b>✦</b><span>È UNA NUOVA PROSPETTIVA</span><b>✦</b><span>UNA STORIA TUTTA TUA</span><b>✦</b></div></section>
+      <div class="dash-panel">
+        <div class="eyebrow"><span></span> AI portrait film studio</div>
+        <h1>Vediti<br/><em>come non ti hai mai visto.</em></h1>
+        <p class="lead">Carica una tua foto, scrivi dove vuoi vederti. Il primo film è gratis.</p>
 
-      <section class="manifesto" id="studio"><p class="eyebrow"><span></span> Il nostro punto di vista</p><h2>Non generiamo video.<br/>Diamo forma a <em>versioni di te.</em></h2><p class="manifesto-text">Chi ti insegna a lavorare su energia e mindset ti allena a immaginarti nella vita che vuoi. Noi ti portiamo un passo oltre: smetti di immaginarla e inizia a vederla, con i tuoi occhi, addosso a te. Non è un esercizio mentale. È un film, ed è tuo.</p></section>
+        <form id="filmForm">
+          <div class="upload-zone" id="dropzone">
+            <input id="photos" type="file" accept="image/*" />
+            <div class="upload-symbol">+</div>
+            <strong>Carica una tua foto</strong>
+            <span>JPG, PNG, HEIC</span>
+            <div id="file-count"></div>
+          </div>
+          <label>COME VUOI VEDERTI?<textarea id="prompt" required placeholder="Es: Voglio vedermi camminare in una Tokyo notturna, con un cappotto rosso e una luce da film anni '90…"></textarea></label>
+          <div class="form-row">
+            <label>LA TUA EMAIL<input id="email" type="email" required placeholder="nome@email.it" /></label>
+            <label>PASSWORD<input id="password" type="password" required minlength="6" placeholder="Almeno 6 caratteri" /></label>
+          </div>
+          <button class="button primary submit" type="submit">Genera il mio film <span>→</span></button>
+          <p class="tiny">Il primo film (12 secondi) è gratis, una volta per account. Dal secondo: €4,99 a film. Le foto vengono eliminate dopo 30 giorni.</p>
+        </form>
 
-      <section class="how" id="come-funziona"><div class="section-label">/ 01 — il processo</div><div class="how-title"><h2>Portaci nel tuo<br/><em>mondo.</em></h2><p>Tre frammenti sono tutto ciò che ci serve per smettere di immaginare e iniziare a vederti.</p></div><div class="steps"><article><div class="step-no">01</div><div class="step-icon photo-icon">◒</div><h3>Le tue foto</h3><p>Carica da 5 a 15 foto. Più spontanee sono, più il risultato ti assomiglierà.</p></article><article><div class="step-no">02</div><div class="step-icon">✎</div><h3>La tua visione</h3><p>Raccontaci dove vuoi vederti. Un sogno, un ricordo, un semplice “e se…”.</p></article><article><div class="step-no">03</div><div class="step-icon">✦</div><h3>Il tuo film</h3><p>Il nostro studio AI compone il tuo video verticale, pronto da custodire o condividere.</p></article></div><button class="text-link" onclick="openCreator()">Inizia la tua storia <span>→</span></button></section>
-
-      <section class="showcase"><div class="showcase-video"><div class="scene-sun"></div><div class="scene-person"></div><div class="scene-hill hill-one"></div><div class="scene-hill hill-two"></div><div class="showcase-caption"><span>ELENA, 31</span><p>“Mi vedo attraversare<br/>l’Islanda, da sola.”</p></div><button class="round-play">▶</button><div class="video-time">00:18 / 00:24</div></div><div class="showcase-copy"><div class="eyebrow"><span></span> Una possibilità su mille</div><h2>“Non sapevo di poter<br/><em>emozionarmi così</em><br/>guardando me stessa.”</h2><p>Ogni film NUOVA parte da una persona reale e arriva in un luogo che esiste solo nella sua immaginazione.</p><a href="#" class="text-link">Guarda le storie <span>→</span></a></div></section>
-
-      <section class="pricing" id="prezzi"><div class="price-intro"><div class="section-label">/ 02 — semplice, sempre</div><h2>La prima visione<br/>è <em>nostra.</em></h2><p>Prova il processo, senza impegno. Quando vorrai continuare a raccontarti, scegli il formato che ti somiglia.</p></div><div class="price-cards"><article class="price-card free"><p class="card-kicker">IL PRIMO INCONTRO</p><h3>Prima<br/>visione</h3><div class="price">€0 <small>/ un film per account</small></div><ul><li>Film di 12 secondi</li><li>Formato verticale</li><li>Watermark NUOVA</li></ul><button class="button dark" onclick="openCreator()">Inizia gratis <span>→</span></button></article><article class="price-card plus"><div class="popular">IL PIÙ SCELTO</div><p class="card-kicker">PER CONTINUARE</p><h3>Director’s<br/>cut</h3><div class="price">€19 <small>/ film</small></div><ul><li>Film fino a 45 secondi</li><li>HD + senza watermark</li><li>2 varianti di stile</li><li>Download e condivisione</li></ul><button class="button primary" disabled>Presto disponibile <span>→</span></button><p class="tiny" style="margin-top:12px">Stiamo aprendo i pagamenti. Nel frattempo prova la prima visione gratuita.</p></article></div></section>
-
-      <section class="closing"><div class="closing-orbit orbit-one"></div><div class="closing-orbit orbit-two"></div><p class="eyebrow"><span></span> il tuo prossimo capitolo</p><h2>La tua storia ha<br/>ancora molto da<br/><em>mostrarti.</em></h2><button class="button light" onclick="openCreator()">Crea il tuo primo film <span>→</span></button></section>
+        <div class="result" id="result">
+          <p id="result-text"></p>
+        </div>
+      </div>
     </main>
-    <footer><a class="logo" href="#top">NUOVA<span>®</span></a><p>© 2024 NUOVA STUDIO. MADE WITH IMAGINATION.</p><div><a href="#">Instagram</a><a href="#">TikTok</a><a href="#">Privacy</a></div></footer>
 
-    <div class="modal" id="creator" aria-hidden="true"><div class="modal-panel"><button class="close" onclick="closeCreator()">×</button><div class="modal-head"><span class="eyebrow"><span></span> NUOVA / NUOVO FILM</span><h2>Iniziamo da<br/><em>te.</em></h2><p>Il tuo primo film è gratuito, una volta per account. Ci vogliono circa 3 minuti — creiamo il tuo accesso NUOVA con email e password.</p></div><form id="filmForm"><div class="upload-zone" id="dropzone"><input id="photos" type="file" accept="image/*" multiple /><div class="upload-symbol">+</div><strong>Carica le tue foto</strong><span>Da 5 a 15 immagini · JPG, PNG, HEIC</span><div id="file-count"></div></div><label>COME VUOI VEDERTI?<textarea id="prompt" required placeholder="Es: Voglio vedermi camminare in una Tokyo notturna, con un cappotto rosso e una luce da film anni '90…"></textarea></label><div class="form-row"><label>LA TUA EMAIL<input id="email" type="email" required placeholder="nome@email.it" /></label><label>CREA UNA PASSWORD<input id="password" type="password" required minlength="6" placeholder="Almeno 6 caratteri" /></label></div><label>STILE<select id="style"><option>Cinematografico</option><option>Sognante</option><option>Vintage</option><option>Editoriale</option></select></label><button class="button primary submit" type="submit">Genera il mio film <span>→</span></button><p class="tiny">Cliccando, accetti che le immagini siano elaborate per creare il tuo film. Le eliminiamo dopo 30 giorni.</p></form><div class="success" id="success"><div class="success-star">✦</div><h2>È iniziato.</h2><p>Stiamo componendo la tua prima visione. Ti invieremo il film non appena sarà pronto.</p><button class="button dark" onclick="closeCreator()">Torna a NUOVA</button></div></div></div>
+    <footer><a class="logo" href="#top">NUOVA<span>®</span></a><p>© 2026 NUOVA STUDIO.</p></footer>
     <script src="script.js"></script>
   </body>
 </html>

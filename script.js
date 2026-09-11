@@ -1,24 +1,18 @@
-// URL del backend su Vercel — aggiorna questa riga con l'URL reale dopo il deploy (vedi DEPLOY.md nel repo nuova-api)
-const BACKEND_URL = 'https://nuova-api.vercel.app'; // URL reale confermato, deploy attivo
+// URL del backend su Vercel.
+const BACKEND_URL = 'https://nuova-api.vercel.app';
 
-const modal = document.getElementById('creator');
-function openCreator(){
-  modal.classList.add('open'); modal.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden';
-  document.getElementById('filmForm').classList.remove('done');
-  document.querySelector('.modal-head').classList.remove('done');
-  const success = document.getElementById('success');
-  success.classList.remove('show');
-  const video = success.querySelector('video');
-  if (video) video.remove();
-}
-function closeCreator(){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); document.body.style.overflow=''; }
-modal.addEventListener('click', e => { if(e.target === modal) closeCreator(); });
-document.addEventListener('keydown', e => { if(e.key === 'Escape') closeCreator(); });
+const photos = document.getElementById('photos');
+const dropzone = document.getElementById('dropzone');
+const result = document.getElementById('result');
+const resultText = document.getElementById('result-text');
 
-const photos = document.getElementById('photos'); const dropzone = document.getElementById('dropzone');
-photos.addEventListener('change', () => { const n=photos.files.length; document.getElementById('file-count').textContent=n ? `${n} ${n===1?'foto selezionata':'foto selezionate'}` : ''; dropzone.classList.toggle('has-files',!!n); });
+photos.addEventListener('change', () => {
+  const n = photos.files.length;
+  document.getElementById('file-count').textContent = n ? `${n} ${n === 1 ? 'foto selezionata' : 'foto selezionate'}` : '';
+  dropzone.classList.toggle('has-files', !!n);
+});
 
-function fileToBase64(file){
+function fileToBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result);
@@ -27,36 +21,33 @@ function fileToBase64(file){
   });
 }
 
-function setSuccessMessage(title, text){
-  const success = document.getElementById('success');
-  success.querySelector('h2').textContent = title;
-  success.querySelector('p').textContent = text;
+function showResult(text) {
+  result.classList.add('show');
+  resultText.textContent = text;
 }
 
-async function pollStatus(id){
+async function pollStatus(id) {
   let data;
   try {
     const res = await fetch(`${BACKEND_URL}/api/status?id=${id}`);
     data = await res.json();
   } catch (err) {
-    setSuccessMessage('Connessione persa', 'Non riusciamo a controllare lo stato del film. Riprova tra poco.');
+    showResult('Connessione persa. Riprova tra poco.');
     return;
   }
 
   if (data.status === 'succeeded') {
     const url = Array.isArray(data.output) ? data.output[0] : data.output;
-    setSuccessMessage('È pronto.', 'Ecco la tua prima visione.');
-    const success = document.getElementById('success');
-    const existingVideo = success.querySelector('video');
+    showResult('Ecco la tua prima visione.');
+    const existingVideo = result.querySelector('video');
     if (existingVideo) existingVideo.remove();
     const video = document.createElement('video');
     video.src = url; video.controls = true; video.autoplay = true;
-    video.style.width = '100%'; video.style.marginBottom = '20px';
-    success.insertBefore(video, success.querySelector('.button'));
+    result.appendChild(video);
     return;
   }
   if (data.status === 'failed') {
-    setSuccessMessage('Qualcosa non ha funzionato', 'La generazione non è riuscita. Riprova con un\'altra foto o descrizione.');
+    showResult('La generazione non è riuscita. Riprova con un\'altra foto o descrizione.');
     return;
   }
   setTimeout(() => pollStatus(id), 4000);
@@ -64,17 +55,15 @@ async function pollStatus(id){
 
 document.getElementById('filmForm').addEventListener('submit', async e => {
   e.preventDefault();
-  const form = document.getElementById('filmForm');
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
   const prompt = document.getElementById('prompt').value;
   const file = photos.files[0];
-  if (!file) { alert('Carica almeno una foto.'); return; }
+  if (!file) { alert('Carica una foto.'); return; }
 
-  form.classList.add('done');
-  document.querySelector('.modal-head').classList.add('done');
-  document.getElementById('success').classList.add('show');
-  setSuccessMessage('Un attimo.', 'Stiamo componendo la tua prima visione…');
+  const existingVideo = result.querySelector('video');
+  if (existingVideo) existingVideo.remove();
+  showResult('Un attimo, stiamo componendo la tua prima visione…');
 
   try {
     const imageBase64 = await fileToBase64(file);
@@ -84,12 +73,9 @@ document.getElementById('filmForm').addEventListener('submit', async e => {
       body: JSON.stringify({ email, password, imageBase64, prompt }),
     });
     const data = await res.json();
-    if (!res.ok) {
-      setSuccessMessage('Non siamo partiti', data.error || 'Riprova tra poco.');
-      return;
-    }
+    if (!res.ok) { showResult(data.error || 'Riprova tra poco.'); return; }
     pollStatus(data.id);
   } catch (err) {
-    setSuccessMessage('Non siamo partiti', 'Non siamo riusciti ad avviare la generazione. Riprova tra poco.');
+    showResult('Non siamo riusciti ad avviare la generazione. Riprova tra poco.');
   }
 });
